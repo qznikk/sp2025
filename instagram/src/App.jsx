@@ -19,7 +19,7 @@ function App() {
   const handleSignUp = async () => {
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) alert("Błąd rejestracji: " + error.message);
-    else alert("Zarejestrowano! Teraz możesz się zalogować.");
+    else alert("Zarejestrowano! Sprawdź maila lub zaloguj się.");
   };
 
   const handleSignIn = async () => {
@@ -30,13 +30,16 @@ function App() {
     if (error) alert("Błąd logowania: " + error.message);
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+  };
+
   const handleUpload = async () => {
     if (!file) return alert("Wybierz plik!");
 
     const userResp = await supabase.auth.getUser();
     const user = userResp.data.user;
-
-    console.log("SUPABASE USER:", user);
 
     if (!user) {
       alert("Brak zalogowanego użytkownika");
@@ -54,14 +57,11 @@ function App() {
       return alert("Upload error: " + uploadError.message);
     }
 
-    // sprawdzamy dane przed INSERT
     const insertData = {
       user_id: user.id,
       file_path: filePath,
       title: file.name,
     };
-
-    console.log("INSERT DATA:", insertData);
 
     const { error: dbError } = await supabase
       .from("photos")
@@ -75,11 +75,47 @@ function App() {
     alert("Zdjęcie przesłane i zapisane!");
   };
 
+  if (!session) {
+    return (
+      <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
+        <h2>Logowanie / Rejestracja</h2>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ width: "100%", marginBottom: "10px" }}
+        />
+        <input
+          type="password"
+          placeholder="Hasło"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ width: "100%", marginBottom: "10px" }}
+        />
+        <div>
+          <button onClick={handleSignIn} style={{ marginRight: "10px" }}>
+            Zaloguj się
+          </button>
+          <button onClick={handleSignUp}>Zarejestruj się</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Witaj!</h2>
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <button onClick={handleUpload}>Wyślij zdjęcie</button>
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "auto" }}>
+      <h2>Witaj w galerii!</h2>
+      <p>
+        Zalogowany jako: <strong>{session.user.email}</strong>
+      </p>
+      <button onClick={handleSignOut} style={{ marginBottom: "20px" }}>
+        Wyloguj
+      </button>
+      <div>
+        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+        <button onClick={handleUpload}>Wyślij zdjęcie</button>
+      </div>
     </div>
   );
 }
