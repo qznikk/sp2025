@@ -1,0 +1,154 @@
+/* Styl całej strony */
+body {
+  background-color: #000;
+  font-family: "Inter", sans-serif;
+  color: white;
+}
+
+/* Główne pudełko logowania */
+.loginContainer {
+  max-width: 420px;
+  margin: 100px auto;
+  padding: 40px;
+  background-color: #0a0a0a;
+  border-radius: 20px;
+  border: 1px solid #ff00d0;
+  box-shadow: 0 0 40px rgba(255, 0, 208, 0.3);
+  color: white;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+/* Animacja fade-in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Tytuł formularza */
+.title {
+  font-size: 1.8em;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+/* Formularz logowania */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Pola input */
+.input {
+  padding: 12px 16px;
+  font-size: 1em;
+  border: 1px solid #31313133;
+  border-radius: 12px;
+  background-color: rgb(47, 47, 47);
+  color: white;
+  transition: border 0.3s;
+}
+
+.input::placeholder {
+  color: #777;
+}
+
+.input:focus {
+  border-color: #ff00d0;
+  outline: none;
+}
+
+/* Główny przycisk logowania */
+.button {
+  font-size: 1em;
+  padding: 12px 24px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.button:hover {
+  background-color: #ff00d0;
+  color: white;
+}
+
+/* Przycisk OAuth - czarny styl */
+.oauthButton {
+  font-size: 1em;
+  padding: 12px 24px;
+  background-color: black;
+  color: white;
+  border: 2px solid white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.oauthButton:hover {
+  border-color: #ff00d0;
+  color: #ff00d0;
+}
+
+/* Oddzielenie "lub" */
+.divider {
+  margin: 24px 0 12px;
+  font-weight: 500;
+  color: #999;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background-color: #333;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+/* Linki dolne */
+.linkText {
+  font-size: 0.9em;
+  color: #fff;
+  margin-top: 16px;
+}
+
+.linkText a {
+  color: #ff00d0;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.linkText a:hover {
+  text-decoration: underline;
+}
+
+.loginBackground {
+  min-height: 90vh;
+  background: url("../assets/backgroundlogin.jpg") no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

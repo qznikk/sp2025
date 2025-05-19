@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../lib/supabase-client";
+import styles from "../styles/login.module.css";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -14,35 +15,42 @@ export default function Signup() {
     const { error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
-      alert("Błąd rejestracji: " + error.message);
+      alert("Signup error: " + error.message);
     } else {
-      alert("Zarejestrowano! Sprawdź e-mail lub zaloguj się.");
+      alert("Registered successfully! Check your email or log in.");
       navigate("/login");
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "40px auto" }}>
-      <h2>Załóż konto</h2>
-      <form onSubmit={handleSignup}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          required
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ display: "block", marginBottom: "10px", width: "100%" }}
-        />
-        <input
-          type="password"
-          placeholder="Hasło"
-          value={password}
-          required
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ display: "block", marginBottom: "10px", width: "100%" }}
-        />
-        <button type="submit">Zarejestruj się</button>
-      </form>
+    <div className={styles.loginBackground}>
+      <div className={styles.loginContainer}>
+        <h2 className={styles.title}>Create Account</h2>
+        <form className={styles.form} onSubmit={handleSignup}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
+            className={styles.input}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
+            className={styles.input}
+          />
+          <button type="submit" className={styles.button}>
+            Sign Up
+          </button>
+        </form>
+        <div className={styles.linkText}>
+          Already have an account? <a href="/login">Log in</a>
+        </div>
+      </div>
     </div>
   );
 }

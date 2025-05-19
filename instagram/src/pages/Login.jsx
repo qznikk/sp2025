@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../lib/supabase-client";
+import styles from "../styles/login.module.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,34 +18,60 @@ export default function Login() {
     });
 
     if (error) {
-      alert("Błąd logowania: " + error.message);
+      alert("Login error: " + error.message);
     } else {
       navigate("/dashboard");
     }
   };
 
+  const handleOAuthLogin = async (provider) => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+
+    if (error) {
+      alert(`OAuth login error with ${provider}: ` + error.message);
+    }
+  };
+
   return (
-    <div style={{ maxWidth: "400px", margin: "40px auto" }}>
-      <h2>Zaloguj się</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          required
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ display: "block", marginBottom: "10px", width: "100%" }}
-        />
-        <input
-          type="password"
-          placeholder="Hasło"
-          value={password}
-          required
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ display: "block", marginBottom: "10px", width: "100%" }}
-        />
-        <button type="submit">Zaloguj</button>
-      </form>
+    <div className={styles.loginBackground}>
+      <div className={styles.loginContainer}>
+        <h2 className={styles.title}>Sign In</h2>
+        <form className={styles.form} onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
+            className={styles.input}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
+            className={styles.input}
+          />
+          <button type="submit" className={styles.button}>
+            Sign In
+          </button>
+        </form>
+
+        <div className={styles.divider}>or</div>
+
+        <button
+          className={styles.oauthButton}
+          onClick={() => handleOAuthLogin("google")}
+        >
+          Sign in with Google
+        </button>
+      </div>
     </div>
   );
 }
