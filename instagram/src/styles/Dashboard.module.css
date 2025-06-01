@@ -1,0 +1,36 @@
+.container {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  background-color: #1f2937;
+  border-radius: 12px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 28px;
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.infoBox {
+  background-color: #2d3748;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.infoText {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.subText {
+  color: #aaa;
+  font-size: 16px;
+}
+
+.value {
+  color: #ffffff;
+}
