@@ -133,7 +133,7 @@ export default function Navbar() {
                     navigate("/login");
                     toggleMenu();
                   }}
-                  className={styles.menuButton}
+                  className={styles.buttonBlack}
                 >
                   Zaloguj
                 </button>
@@ -142,7 +142,7 @@ export default function Navbar() {
                     navigate("/signup");
                     toggleMenu();
                   }}
-                  className={styles.menuButton}
+                  className={styles.buttonWhite}
                 >
                   Zarejestruj
                 </button>

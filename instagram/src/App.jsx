@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+/*import { useState, useEffect } from "react";
 import supabase from "./lib/supabase-client";
 
 function App() {
@@ -121,3 +121,4 @@ function App() {
 }
 
 export default App;
+*/
