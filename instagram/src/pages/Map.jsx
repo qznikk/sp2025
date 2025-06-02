@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import supabase from "../lib/supabase-client";
-import exifr from "exifr";
 
 // Naprawa ikon Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -18,70 +17,65 @@ export default function MapWithMetadata() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPhotosWithMetadata = async () => {
+    const fetchPhotos = async () => {
       setLoading(true);
 
       const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user) {
+      const user = userData?.user;
+      if (!user) {
         setLoading(false);
         return;
       }
 
-      const { data: photoList, error } = await supabase
+      // 1. Pobieramy tylko te photo_info, które mają współrzędne i należą do użytkownika
+      const { data: photoInfoList, error: infoError } = await supabase
+        .from("photo_info")
+        .select("id, photo_id, latitude, longitude")
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
+
+      if (infoError) {
+        console.error("Błąd pobierania photo_info:", infoError);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Pobieramy zdjęcia z tabeli photos, które są powiązane z photo_info
+      const photoIds = photoInfoList.map((info) => info.photo_id);
+
+      const { data: photoList, error: photoError } = await supabase
         .from("photos")
-        .select("*")
-        .eq("user_id", userData.user.id);
+        .select("id, file_path, title")
+        .in("id", photoIds)
+        .eq("user_id", user.id);
 
-      if (error) {
-        console.error("Błąd pobierania zdjęć:", error);
+      if (photoError) {
+        console.error("Błąd pobierania photos:", photoError);
         setLoading(false);
         return;
       }
 
-      const imageExtensions = ["jpg", "jpeg", "png", "webp", "gif"];
+      // 3. Łączymy dane z obu tabel
+      const mergedPhotos = photoInfoList.map((info) => {
+        const matchingPhoto = photoList.find((photo) => photo.id === info.photo_id);
+        if (!matchingPhoto) return null;
 
-      const enrichedPhotos = await Promise.all(
-        photoList
-          .filter(photo => {
-            const ext = photo.title.split(".").pop().toLowerCase();
-            return imageExtensions.includes(ext);
-          })
-          .map(async (photo) => {
-            const { data } = supabase.storage.from("photos").getPublicUrl(photo.file_path);
-            const url = data?.publicUrl;
+        const { data } = supabase.storage.from("photos").getPublicUrl(matchingPhoto.file_path);
+        return {
+          id: info.id,
+          title: matchingPhoto.title,
+          url: data?.publicUrl,
+          latitude: info.latitude,
+          longitude: info.longitude,
+        };
+      }).filter(Boolean);
 
-            try {
-              const exifData = await exifr.parse(url, { gps: true });
-              return {
-                ...photo,
-                url,
-                metadata: {
-                  date: exifData?.DateTimeOriginal || null,
-                  lat: exifData?.latitude,
-                  lng: exifData?.longitude,
-                },
-              };
-            } catch (err) {
-              console.warn("Nie udało się pobrać EXIF dla", photo.title, err);
-              return {
-                ...photo,
-                url,
-                metadata: null,
-              };
-            }
-          })
-      );
-
-      setPhotos(enrichedPhotos);
+      setPhotos(mergedPhotos);
       setLoading(false);
     };
 
-    fetchPhotosWithMetadata();
+    fetchPhotos();
   }, []);
-
-  const photosWithLocation = photos.filter(
-    (p) => p.metadata?.lat && p.metadata?.lng
-  );
 
   return (
     <div style={{ padding: "20px" }}>
@@ -104,7 +98,7 @@ export default function MapWithMetadata() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {photosWithLocation.map((photo) => {
+            {photos.map((photo) => {
               const icon = new L.Icon({
                 iconUrl: photo.url,
                 iconSize: [40, 40],
@@ -114,15 +108,11 @@ export default function MapWithMetadata() {
               return (
                 <Marker
                   key={photo.id}
-                  position={[photo.metadata.lat, photo.metadata.lng]}
+                  position={[photo.latitude, photo.longitude]}
                   icon={icon}
                 >
                   <Popup>
                     <strong>{photo.title}</strong>
-                    <br />
-                    {photo.metadata.date
-                      ? new Date(photo.metadata.date).toLocaleString()
-                      : "Brak daty"}
                   </Popup>
                 </Marker>
               );
@@ -132,7 +122,7 @@ export default function MapWithMetadata() {
           <h2 style={{ fontSize: "18px", marginBottom: "12px" }}>
             Zdjęcia z danymi lokalizacji:
           </h2>
-          {photosWithLocation.length === 0 ? (
+          {photos.length === 0 ? (
             <p>Brak zdjęć z informacją o lokalizacji GPS.</p>
           ) : (
             <div
@@ -142,7 +132,7 @@ export default function MapWithMetadata() {
                 gap: "16px",
               }}
             >
-              {photosWithLocation.map((photo) => (
+              {photos.map((photo) => (
                 <div key={photo.id} style={{ textAlign: "center" }}>
                   <img
                     src={photo.url}

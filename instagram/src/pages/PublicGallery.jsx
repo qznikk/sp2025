@@ -71,8 +71,6 @@ export default function PublicGallery() {
       title: edited.title ?? photo.title,
       description: edited.description ?? photo.description,
       tags: edited.tags ?? photo.tags,
-      gps_lat: edited.gps_lat ?? photo.gps_lat,
-      gps_lng: edited.gps_lng ?? photo.gps_lng,
     };
 
     const { error } = await supabase
@@ -147,26 +145,6 @@ export default function PublicGallery() {
                       type="text"
                       value={edit.tags ?? photo.tags ?? ""}
                       onChange={(e) => handleChange(photo.id, "tags", e.target.value)}
-                      style={{ width: "100%" }}
-                    />
-                  </label>
-                  <label>
-                    GPS Latitude:
-                    <input
-                      type="number"
-                      step="any"
-                      value={edit.gps_lat ?? photo.gps_lat ?? ""}
-                      onChange={(e) => handleChange(photo.id, "gps_lat", e.target.value)}
-                      style={{ width: "100%" }}
-                    />
-                  </label>
-                  <label>
-                    GPS Longitude:
-                    <input
-                      type="number"
-                      step="any"
-                      value={edit.gps_lng ?? photo.gps_lng ?? ""}
-                      onChange={(e) => handleChange(photo.id, "gps_lng", e.target.value)}
                       style={{ width: "100%" }}
                     />
                   </label>

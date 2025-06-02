@@ -2,6 +2,8 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import supabase from "../lib/supabase-client";
 import styles from "../styles/upload.module.css";
+import * as exifr from "exifr";
+import UploadMap from "../components/UploadMap";
 
 const ALLOWED_FOLDERS = [
   "Wakacje", "Rodzina", "Przyjaciele", "Praca", "Szkoła",
@@ -18,6 +20,8 @@ export default function Upload() {
   const [folder, setFolder] = useState(ALLOWED_FOLDERS[0]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [status, setStatus] = useState(null);
+  const [manualLat, setManualLat] = useState(null);
+  const [manualLng, setManualLng] = useState(null);
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -29,6 +33,13 @@ export default function Upload() {
     setStatus(null);
     if (!file) return setStatus({ type: "error", message: "Wybierz plik!" });
 
+    if (file.name.toLowerCase().endsWith(".heic")) {
+      return setStatus({
+        type: "error",
+        message: "Pliki HEIC nie są obsługiwane. Przekonwertuj je do JPG lub PNG.",
+      });
+    }
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return setStatus({ type: "error", message: "Musisz być zalogowany." });
@@ -38,6 +49,27 @@ export default function Upload() {
     const filePath = `${user.id}/${uuid}_${file.name}`;
     const timestamp = new Date().toISOString();
 
+    // odczyt danych lokalizacyjnych
+    let latitude = null;
+    let longitude = null;
+
+    try {
+      const gpsData = await exifr.gps(file);
+      if (gpsData?.latitude && gpsData?.longitude) {
+        latitude = gpsData.latitude;
+        longitude = gpsData.longitude;
+      }
+    } catch (exifError) {
+      console.warn("Brak danych GPS lub błąd EXIF:", exifError);
+    }
+
+    // fallback do lokalizacji z mapy
+    if (!latitude && !longitude && manualLat && manualLng) {
+      latitude = manualLat;
+      longitude = manualLng;
+    }
+
+    // upload pliku
     const { error: uploadError } = await supabase.storage
       .from("photos")
       .upload(filePath, file);
@@ -61,11 +93,14 @@ export default function Upload() {
       return setStatus({ type: "error", message: "Błąd zapisu zdjęcia." });
     }
 
+    // zapis metadanych z lokalizacją
     const { error: infoError } = await supabase.from("photo_info").insert([{
       photo_id: photoData.id,
       tags: selectedTags.join(","),
       folder: folder,
       created_at: timestamp,
+      latitude: latitude,
+      longitude: longitude,
     }]);
 
     if (infoError) {
@@ -76,6 +111,8 @@ export default function Upload() {
     setFile(null);
     setFolder(ALLOWED_FOLDERS[0]);
     setSelectedTags([]);
+    setManualLat(null);
+    setManualLng(null);
   };
 
   return (
@@ -124,6 +161,19 @@ export default function Upload() {
           </label>
         ))}
       </div>
+
+      <div style={{ marginTop: "1rem" }}>
+        <p>Jeśli zdjęcie nie zawiera lokalizacji, możesz ją wybrać ręcznie:</p>
+          <UploadMap
+            selectedLat={manualLat}
+            selectedLng={manualLng}
+            onSelect={({ lat, lng }) => {
+              setManualLat(lat);
+              setManualLng(lng);
+            }}
+          />
+      </div>
+
 
       <button onClick={handleUpload} className={styles.button}>Wyślij</button>
 
