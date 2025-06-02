@@ -1,0 +1,196 @@
+.container {
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+  background-color: #000;
+  color: white;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ff00d0;
+}
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: transparent;
+  color: #aaa;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.filterButton:hover {
+  background-color: #222;
+}
+
+.active {
+  background-color: #ff00d0;
+  color: white;
+  border-color: #ff00d0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background-color: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.mediaWrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.media {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+}
+
+.audio {
+  width: 100%;
+}
+
+.watermark {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.fileLink {
+  color: #4f46e5;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+.fileTitle {
+  font-size: 14px;
+  margin-top: 8px;
+  color: #ccc;
+}
+
+.deleteButton {
+  margin-top: 8px;
+  background-color: #e11d48;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  position: relative;
+}
+
+.modalImage {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 0 20px black;
+}
+
+.modalWatermark {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.modalClose {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 32px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.confirmBox {
+  background-color: #0a0a0a;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+  border: 1px solid #ff00d0;
+  max-width: 320px;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.cancelButton {
+  background-color: #666;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.confirmDelete {
+  background-color: #e11d48;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.message {
+  text-align: center;
+  font-size: 1em;
+  color: #ccc;
+}

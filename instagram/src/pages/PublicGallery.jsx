@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import supabase from "../lib/supabase-client";
+import styles from "../styles/publicGallery.module.css";
 
 export default function PublicGallery() {
   const [photos, setPhotos] = useState([]);
@@ -36,7 +37,9 @@ export default function PublicGallery() {
             return ext && imageExtensions.includes(ext);
           })
           .map(async (photo) => {
-            const { data } = supabase.storage.from("photos").getPublicUrl(photo.file_path);
+            const { data } = supabase.storage
+              .from("photos")
+              .getPublicUrl(photo.file_path);
             return {
               ...photo,
               url: data.publicUrl,
@@ -94,51 +97,42 @@ export default function PublicGallery() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Podgląd i Edycja Metadanych</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Podgląd i Edycja Metadanych</h1>
 
       {loading ? (
-        <p>Ładowanie zdjęć...</p>
+        <p className={styles.loading}>Ładowanie zdjęć...</p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-            gap: "20px",
-          }}
-        >
+        <div className={styles.galleryGrid}>
           {photos.map((photo) => {
             const edit = editing[photo.id] || {};
             return (
-              <div
-                key={photo.id}
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "12px",
-                }}
-              >
+              <div key={photo.id} className={styles.card}>
                 <img
                   src={photo.url}
                   alt={photo.title}
-                  style={{ width: "100%", borderRadius: "6px" }}
+                  className={styles.image}
                 />
-                <div style={{ marginTop: "10px" }}>
+                <div className={styles.form}>
                   <label>
                     Tytuł:
                     <input
                       type="text"
                       value={edit.title ?? photo.title ?? ""}
-                      onChange={(e) => handleChange(photo.id, "title", e.target.value)}
-                      style={{ width: "100%" }}
+                      onChange={(e) =>
+                        handleChange(photo.id, "title", e.target.value)
+                      }
+                      className={styles.input}
                     />
                   </label>
                   <label>
                     Opis:
                     <textarea
                       value={edit.description ?? photo.description ?? ""}
-                      onChange={(e) => handleChange(photo.id, "description", e.target.value)}
-                      style={{ width: "100%", minHeight: "60px" }}
+                      onChange={(e) =>
+                        handleChange(photo.id, "description", e.target.value)
+                      }
+                      className={styles.textarea}
                     />
                   </label>
                   <label>
@@ -146,8 +140,10 @@ export default function PublicGallery() {
                     <input
                       type="text"
                       value={edit.tags ?? photo.tags ?? ""}
-                      onChange={(e) => handleChange(photo.id, "tags", e.target.value)}
-                      style={{ width: "100%" }}
+                      onChange={(e) =>
+                        handleChange(photo.id, "tags", e.target.value)
+                      }
+                      className={styles.input}
                     />
                   </label>
                   <label>
@@ -156,8 +152,10 @@ export default function PublicGallery() {
                       type="number"
                       step="any"
                       value={edit.gps_lat ?? photo.gps_lat ?? ""}
-                      onChange={(e) => handleChange(photo.id, "gps_lat", e.target.value)}
-                      style={{ width: "100%" }}
+                      onChange={(e) =>
+                        handleChange(photo.id, "gps_lat", e.target.value)
+                      }
+                      className={styles.input}
                     />
                   </label>
                   <label>
@@ -166,23 +164,17 @@ export default function PublicGallery() {
                       type="number"
                       step="any"
                       value={edit.gps_lng ?? photo.gps_lng ?? ""}
-                      onChange={(e) => handleChange(photo.id, "gps_lng", e.target.value)}
-                      style={{ width: "100%" }}
+                      onChange={(e) =>
+                        handleChange(photo.id, "gps_lng", e.target.value)
+                      }
+                      className={styles.input}
                     />
                   </label>
 
                   <button
                     onClick={() => handleSave(photo)}
                     disabled={savingId === photo.id}
-                    style={{
-                      marginTop: "10px",
-                      backgroundColor: "#007bff",
-                      color: "white",
-                      padding: "8px 12px",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
+                    className={styles.button}
                   >
                     {savingId === photo.id ? "Zapisywanie..." : "Zapisz zmiany"}
                   </button>

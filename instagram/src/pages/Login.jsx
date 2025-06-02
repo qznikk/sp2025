@@ -1,5 +1,5 @@
 // src/pages/Login.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../lib/supabase-client";
 import styles from "../styles/login.module.css";
@@ -9,6 +9,17 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      console.log("[Auth] Session after OAuth callback:", data.session);
+      if (error) console.error("[Auth] Session fetch error:", error);
+    };
+
+    checkSession();
+  }, []);
+
+  // Obsługa logowania przez email i hasło
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -24,8 +35,11 @@ export default function Login() {
     }
   };
 
+  // Logowanie przez OAuth (Google)
   const handleOAuthLogin = async (provider) => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    console.log(`[OAuth] Starting login with provider: ${provider}`);
+
+    const { data, error, url } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: `${window.location.origin}/dashboard`,
@@ -33,9 +47,33 @@ export default function Login() {
     });
 
     if (error) {
-      alert(`OAuth login error with ${provider}: ` + error.message);
+      console.error(
+        `[OAuth] Error during login with ${provider}:`,
+        error.message
+      );
+      alert(`OAuth login error with ${provider}: ${error.message}`);
+    } else {
+      console.log("[OAuth] Login request sent successfully.");
+      console.log("[OAuth] Redirect URL:", url);
+      console.log("[OAuth] Response data:", data);
+      // Supabase will redirect automatically — no need to navigate manually here
     }
   };
+
+  // Obsługa sesji po powrocie z Google
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          navigate("/dashboard");
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return (
     <div className={styles.loginBackground}>
@@ -71,6 +109,10 @@ export default function Login() {
         >
           Sign in with Google
         </button>
+
+        <div className={styles.linkText}>
+          Don't have an account? <a href="/signup">Sign up</a>
+        </div>
       </div>
     </div>
   );

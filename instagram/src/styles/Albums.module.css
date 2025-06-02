@@ -1,0 +1,99 @@
+.container {
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+  background-color: #000;
+  color: white;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #ff00d0;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+.albumBlock {
+  margin-bottom: 40px;
+}
+
+.albumDate {
+  font-size: 1.4rem;
+  color: #ff00d0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}
+
+.photoGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.photoItem {
+  text-align: center;
+  width: 150px;
+}
+
+.thumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.thumbnail:hover {
+  transform: scale(1.05);
+}
+
+.caption {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-top: 6px;
+  word-break: break-word;
+}
+
+/* Modal styles */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  position: relative;
+}
+
+.modalImage {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 0 30px #000;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 32px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

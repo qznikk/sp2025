@@ -4,11 +4,13 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import supabase from "../lib/supabase-client";
 import exifr from "exifr";
+import styles from "../styles/map.module.css";
 
-// Naprawa ikon Leaflet
+// Fix for default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
@@ -33,7 +35,7 @@ export default function MapWithMetadata() {
         .eq("user_id", userData.user.id);
 
       if (error) {
-        console.error("Błąd pobierania zdjęć:", error);
+        console.error("B\u0142\u0105d pobierania zdj\u0119\u0107:", error);
         setLoading(false);
         return;
       }
@@ -42,12 +44,14 @@ export default function MapWithMetadata() {
 
       const enrichedPhotos = await Promise.all(
         photoList
-          .filter(photo => {
+          .filter((photo) => {
             const ext = photo.title.split(".").pop().toLowerCase();
             return imageExtensions.includes(ext);
           })
           .map(async (photo) => {
-            const { data } = supabase.storage.from("photos").getPublicUrl(photo.file_path);
+            const { data } = supabase.storage
+              .from("photos")
+              .getPublicUrl(photo.file_path);
             const url = data?.publicUrl;
 
             try {
@@ -62,7 +66,11 @@ export default function MapWithMetadata() {
                 },
               };
             } catch (err) {
-              console.warn("Nie udało się pobrać EXIF dla", photo.title, err);
+              console.warn(
+                "Nie uda\u0142o si\u0119 pobra\u0107 EXIF dla",
+                photo.title,
+                err
+              );
               return {
                 ...photo,
                 url,
@@ -84,20 +92,18 @@ export default function MapWithMetadata() {
   );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1 style={{ fontSize: "24px", marginBottom: "16px" }}>
-        Mapa zdjęć z lokalizacją GPS
-      </h1>
+    <div className={styles.container}>
+      <h1 className={styles.heading}>Mapa zdjęć z lokalizacją GPS</h1>
 
       {loading ? (
-        <p>Ładowanie zdjęć...</p>
+        <p className={styles.message}>\u0141adowanie zdj\u0119\u0107...</p>
       ) : (
         <>
           <MapContainer
             center={[52.22977, 21.01178]}
             zoom={6}
             scrollWheelZoom={true}
-            style={{ height: "600px", width: "100%", marginBottom: "30px" }}
+            className={styles.map}
           >
             <TileLayer
               attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
@@ -129,35 +135,23 @@ export default function MapWithMetadata() {
             })}
           </MapContainer>
 
-          <h2 style={{ fontSize: "18px", marginBottom: "12px" }}>
-            Zdjęcia z danymi lokalizacji:
-          </h2>
+          <h2 className={styles.subheading}>Zdjęcia z danymi lokalizacji:</h2>
           {photosWithLocation.length === 0 ? (
-            <p>Brak zdjęć z informacją o lokalizacji GPS.</p>
+            <p className={styles.message}>
+              Brak zdjęć z informacją o lokalizacji GPS.
+            </p>
           ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-                gap: "16px",
-              }}
-            >
+            <div className={styles.photoGrid}>
               {photosWithLocation.map((photo) => (
-                <div key={photo.id} style={{ textAlign: "center" }}>
+                <div key={photo.id} className={styles.photoCard}>
                   <img
                     src={photo.url}
                     alt={photo.title}
-                    style={{
-                      width: "100%",
-                      borderRadius: "8px",
-                      pointerEvents: "none",
-                    }}
+                    className={styles.photoThumb}
                     draggable={false}
                     onContextMenu={(e) => e.preventDefault()}
                   />
-                  <p style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>
-                    {photo.title}
-                  </p>
+                  <p className={styles.caption}>{photo.title}</p>
                 </div>
               ))}
             </div>

@@ -1,0 +1,68 @@
+.container {
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+  background-color: #000;
+  color: white;
+  min-height: 100vh;
+}
+
+.heading {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #ff00d0;
+}
+
+.subheading {
+  font-size: 1.3rem;
+  margin: 20px 0 10px;
+  color: #ccc;
+}
+
+.message {
+  text-align: center;
+  color: #aaa;
+  font-size: 1rem;
+  margin: 20px 0;
+}
+
+.map {
+  height: 600px;
+  width: 100%;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #333;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.photoCard {
+  text-align: center;
+  background-color: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 10px;
+  transition: transform 0.2s ease;
+}
+
+.photoCard:hover {
+  transform: scale(1.03);
+}
+
+.photoThumb {
+  width: 100%;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.caption {
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 6px;
+  word-break: break-word;
+}
