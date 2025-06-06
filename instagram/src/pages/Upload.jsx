@@ -22,6 +22,8 @@ export default function Upload() {
   const [status, setStatus] = useState(null);
   const [manualLat, setManualLat] = useState(null);
   const [manualLng, setManualLng] = useState(null);
+  const [isPrivate, setIsPrivate] = useState(true); // domyślnie prywatne
+  
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -93,6 +95,23 @@ export default function Upload() {
       return setStatus({ type: "error", message: "Błąd zapisu zdjęcia." });
     }
 
+    console.log("Photo ID for visibility insert:", photoData.id);
+
+    const { error: visibilityError } = await supabase
+      .from("photo_visibility")
+      .insert([{
+        id: photoData.id,
+        is_private: isPrivate,
+      }]);
+
+    if (visibilityError) {
+      console.error("Visibility insert error:", visibilityError);
+      return setStatus({
+        type: "error",
+        message: "Błąd zapisu widoczności zdjęcia: " + visibilityError.message,
+      });
+    }
+
     // zapis metadanych z lokalizacją
     const { error: infoError } = await supabase.from("photo_info").insert([{
       photo_id: photoData.id,
@@ -142,6 +161,16 @@ export default function Upload() {
           className={styles.fileInput}
         />
       </label>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={!isPrivate}
+          onChange={() => setIsPrivate((prev) => !prev)}
+        />
+        Publiczne
+      </label>
+
 
       <select value={folder} onChange={(e) => setFolder(e.target.value)} className={styles.textInput}>
         {ALLOWED_FOLDERS.map((f) => (
