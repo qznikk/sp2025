@@ -30,6 +30,7 @@ export default function PublicGallery() {
         return;
       }
 
+<<<<<<< Updated upstream
       const photosWithUrls = await Promise.all(
         photoList
           .filter((photo) => {
@@ -46,6 +47,18 @@ export default function PublicGallery() {
             };
           })
       );
+=======
+      const publicPhotos = data.filter((photo) => photo.photo_visibility?.is_private === false);
+
+      const photosWithUrls = publicPhotos.map((photo) => {
+        const { data: storageData } = supabase.storage.from("photos").getPublicUrl(photo.file_path);
+        return {
+          ...photo,
+          url: storageData.publicUrl,
+          extension: photo.file_path.split(".").pop().toLowerCase(),
+        };
+      });
+>>>>>>> Stashed changes
 
       setPhotos(photosWithUrls);
       setLoading(false);
@@ -54,6 +67,7 @@ export default function PublicGallery() {
     fetchPhotos();
   }, []);
 
+<<<<<<< Updated upstream
   const handleChange = (id, field, value) => {
     setEditing((prev) => ({
       ...prev,
@@ -94,6 +108,18 @@ export default function PublicGallery() {
     }
 
     setSavingId(null);
+=======
+  const isImage = (ext) => ["jpg", "jpeg", "png", "gif", "webp"].includes(ext);
+  const isVideo = (ext) => ["mp4", "mov", "avi", "webm"].includes(ext);
+  const isPDF = (ext) => ext === "pdf";
+
+  const fileIcon = (ext) => {
+    if (isPDF(ext)) return "📄";
+    if (isVideo(ext)) return "🎥";
+    if (["mp3", "wav"].includes(ext)) return "🎵";
+    if (["zip", "rar", "7z"].includes(ext)) return "🗂️";
+    return "📁";
+>>>>>>> Stashed changes
   };
 
   return (
@@ -103,6 +129,7 @@ export default function PublicGallery() {
       {loading ? (
         <p className={styles.loading}>Ładowanie zdjęć...</p>
       ) : (
+<<<<<<< Updated upstream
         <div className={styles.galleryGrid}>
           {photos.map((photo) => {
             const edit = editing[photo.id] || {};
@@ -179,6 +206,54 @@ export default function PublicGallery() {
                     {savingId === photo.id ? "Zapisywanie..." : "Zapisz zmiany"}
                   </button>
                 </div>
+=======
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {photos.map((photo) => (
+            <div key={photo.id} style={{ border: "1px solid #ccc", borderRadius: "8px", padding: "12px" }}>
+              {isImage(photo.extension) ? (
+                <img
+                  src={photo.url}
+                  alt={photo.title}
+                  style={{ width: "100%", borderRadius: "6px" }}
+                />
+              ) : isVideo(photo.extension) ? (
+                <video
+                  src={photo.url}
+                  controls
+                  playsInline
+                  controlsList="nodownload"
+                  style={{ width: "100%", borderRadius: "6px", background: "#000" }}
+                >
+                  Twoja przeglądarka nie obsługuje odtwarzania wideo.
+                </video>
+              ) : (
+                <div
+                  style={{
+                    height: "180px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "64px",
+                  }}
+                >
+                  {fileIcon(photo.extension)}
+                </div>
+              )}
+
+              <div style={{ marginTop: "10px" }}>
+                <h3>{photo.title || photo.file_path.split("/").pop()}</h3>
+                {photo.photo_info?.latitude && photo.photo_info?.longitude && (
+                  <p>
+                    <strong>📍 Lokalizacja:</strong> {photo.photo_info.latitude.toFixed(4)}, {photo.photo_info.longitude.toFixed(4)}
+                  </p>
+                )}
+>>>>>>> Stashed changes
               </div>
             );
           })}
