@@ -6,7 +6,11 @@ import supabase from "../lib/supabase-client";
 import exifr from "exifr";
 import styles from "../styles/map.module.css";
 
+<<<<<<< Updated upstream
 // Fix for default marker icons
+=======
+// Naprawa ikon Leaflet (wymagane!)
+>>>>>>> Stashed changes
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -23,13 +27,44 @@ export default function MapWithMetadata() {
     const fetchPhotosWithMetadata = async () => {
       setLoading(true);
 
+<<<<<<< Updated upstream
       const { data: userData } = await supabase.auth.getUser();
       if (!userData?.user) {
+=======
+      // Pobierz aktualnie zalogowanego użytkownika
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (!user || userError) {
+        console.error("Brak użytkownika:", userError);
+>>>>>>> Stashed changes
         setLoading(false);
         return;
       }
 
+<<<<<<< Updated upstream
       const { data: photoList, error } = await supabase
+=======
+      // Pobierz photo_info ze współrzędnymi
+      const { data: photoInfoList, error: infoError } = await supabase
+        .from("photo_info")
+        .select("id, photo_id, latitude, longitude")
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
+
+      if (infoError) {
+        console.error("Błąd pobierania photo_info:", infoError);
+        setLoading(false);
+        return;
+      }
+
+      // Pobierz zdjęcia użytkownika pasujące do tych ID
+      const photoIds = photoInfoList.map((info) => info.photo_id);
+
+      const { data: photoList, error: photoError } = await supabase
+>>>>>>> Stashed changes
         .from("photos")
         .select("*")
         .eq("user_id", userData.user.id);
@@ -40,6 +75,7 @@ export default function MapWithMetadata() {
         return;
       }
 
+<<<<<<< Updated upstream
       const imageExtensions = ["jpg", "jpeg", "png", "webp", "gif"];
 
       const enrichedPhotos = await Promise.all(
@@ -53,6 +89,24 @@ export default function MapWithMetadata() {
               .from("photos")
               .getPublicUrl(photo.file_path);
             const url = data?.publicUrl;
+=======
+      // Połącz dane
+      const mergedPhotos = photoInfoList
+        .map((info) => {
+          const photo = photoList.find((p) => p.id === info.photo_id);
+          if (!photo) return null;
+
+          const { data } = supabase.storage.from("photos").getPublicUrl(photo.file_path);
+          return {
+            id: info.id,
+            title: photo.title,
+            url: data?.publicUrl,
+            latitude: info.latitude,
+            longitude: info.longitude,
+          };
+        })
+        .filter(Boolean);
+>>>>>>> Stashed changes
 
             try {
               const exifData = await exifr.parse(url, { gps: true });
@@ -100,7 +154,7 @@ export default function MapWithMetadata() {
       ) : (
         <>
           <MapContainer
-            center={[52.22977, 21.01178]}
+            center={[52.22977, 21.01178]} // domyślnie Warszawa
             zoom={6}
             scrollWheelZoom={true}
             className={styles.map}
@@ -124,11 +178,15 @@ export default function MapWithMetadata() {
                   icon={icon}
                 >
                   <Popup>
+<<<<<<< Updated upstream
                     <strong>{photo.title}</strong>
                     <br />
                     {photo.metadata.date
                       ? new Date(photo.metadata.date).toLocaleString()
                       : "Brak daty"}
+=======
+                    <strong>{photo.title || "Bez tytułu"}</strong>
+>>>>>>> Stashed changes
                   </Popup>
                 </Marker>
               );
