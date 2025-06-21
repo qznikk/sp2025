@@ -5,7 +5,7 @@ import exifr from "exifr";
 export default function Albums() {
   const [albums, setAlbums] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(null); // <-- dodane
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const imageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
 
@@ -52,7 +52,23 @@ export default function Albums() {
             const finalDate = date ? new Date(date) : new Date(photo.created_at);
             const albumKey = finalDate.toISOString().split("T")[0];
 
-            return { ...photo, url, albumKey };
+            // Pobierz visibility dla każdego zdjęcia
+            const { data: visibilityData, error: visError } = await supabase
+              .from("photo_visibility")
+              .select("is_private")
+              .eq("photo_id", photo.id)
+              .single();
+
+            if (visError) {
+              console.warn("Nie udało się pobrać visibility dla", photo.title, visError);
+            }
+
+            return {
+              ...photo,
+              url,
+              albumKey,
+              is_private: visibilityData ? visibilityData.is_private : false,
+            };
           })
       );
 
@@ -83,17 +99,35 @@ export default function Albums() {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {photos.map((photo) => (
                 <div key={photo.id} style={{ textAlign: "center" }}>
-                  <img
-                    src={photo.url}
-                    alt={photo.title}
-                    onClick={() => setSelectedImage(photo.url)}
-                    style={{
-                      maxWidth: "150px",
-                      borderRadius: "8px",
-                      objectFit: "cover",
-                      cursor: "pointer"
-                    }}
-                  />
+                  <div style={{ position: "relative", width: "150px" }}>
+                    <img
+                      src={photo.url}
+                      alt={photo.title}
+                      onClick={() => setSelectedImage(photo.url)}
+                      style={{
+                        width: "100%",
+                        height: "150px",
+                        borderRadius: "8px",
+                        objectFit: "cover",
+                        cursor: "pointer",
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "4px",
+                        right: "4px",
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        color: "white",
+                        fontSize: "10px",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      {photo.is_private ? "Private" : "Public"}
+                    </div>
+                  </div>
                   <p style={{ fontSize: "14px" }}>{photo.title}</p>
                 </div>
               ))}
