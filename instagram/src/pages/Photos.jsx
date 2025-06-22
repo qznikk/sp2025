@@ -5,7 +5,7 @@ export default function Photos() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState(""); // Stan na wyszukiwanie
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState(null);
@@ -27,6 +27,15 @@ export default function Photos() {
           *,
           photo_visibility (
             is_private
+          ),
+          photo_descriptions (
+            description
+          ),
+          photo_info (
+            tags,
+            folder,
+            latitude,
+            longitude
           )
         `)
         .eq("user_id", userId)
@@ -100,7 +109,11 @@ export default function Photos() {
   const filteredPhotos = photos.filter((photo) => {
     const type = getMediaType(photo.title);
     const matchesFilter = filter === "all" || filter === type;
-    const matchesSearch = photo.title.toLowerCase().includes(searchQuery.toLowerCase()); // Sprawdzanie wyszukiwania
+    const matchesSearch =
+      photo.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (photo.photo_descriptions?.[0]?.description || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -133,6 +146,7 @@ export default function Photos() {
         />
       </div>
 
+      {/* Filtry */}
       <div style={{ marginBottom: "20px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
         {filters.map(({ label, value }) => (
           <button
@@ -153,6 +167,7 @@ export default function Photos() {
         ))}
       </div>
 
+      {/* Lista zdjęć */}
       {loading ? (
         <p>Ładowanie...</p>
       ) : filteredPhotos.length === 0 ? (
@@ -193,10 +208,7 @@ export default function Photos() {
                 {type === "image" && (
                   <div
                     onClick={() => setSelectedImage(url)}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      togglePrivacy(photo.id, isPrivate);
-                    }}
+                    onContextMenu={(e) => e.preventDefault()} // blokada prawego kliknięcia bez togglePrivacy
                     style={{
                       position: "relative",
                       width: "100%",
@@ -217,16 +229,29 @@ export default function Photos() {
                         pointerEvents: "none",
                       }}
                     />
+                    {/* Watermark */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "8px",
+                        right: "8px",
+                        color: "rgba(255, 255, 255, 0.6)",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        textShadow: "0 0 3px rgba(0,0,0,0.7)",
+                        userSelect: "none",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      © ??? App
+                    </div>
                     {mediaOverlay}
                   </div>
                 )}
 
                 {type === "video" && (
                   <div
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      togglePrivacy(photo.id, isPrivate);
-                    }}
+                    onContextMenu={(e) => e.preventDefault()}
                     style={{
                       position: "relative",
                       width: "100%",
@@ -249,10 +274,7 @@ export default function Photos() {
 
                 {type === "audio" && (
                   <div
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      togglePrivacy(photo.id, isPrivate);
-                    }}
+                    onContextMenu={(e) => e.preventDefault()}
                     style={{ userSelect: "none" }}
                   >
                     <audio
@@ -269,10 +291,7 @@ export default function Photos() {
 
                 {type === "file" && (
                   <div
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      togglePrivacy(photo.id, isPrivate);
-                    }}
+                    onContextMenu={(e) => e.preventDefault()}
                     style={{ userSelect: "none" }}
                   >
                     <a
@@ -296,6 +315,17 @@ export default function Photos() {
                 <p style={{ fontSize: "14px", marginTop: "4px", color: "#aaa" }}>
                   {photo.title}
                 </p>
+                <p
+                  style={{
+                    fontSize: "13px",
+                    marginTop: "2px",
+                    color: "#888",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {photo.photo_descriptions?.[0]?.description || <em>Brak opisu</em>}
+                </p>
+
                 <button
                   onClick={() => {
                     setPhotoToDelete(photo);
@@ -316,6 +346,122 @@ export default function Photos() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Modal usuwania */}
+      {showDeleteModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+              minWidth: "300px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Czy na pewno chcesz usunąć to zdjęcie?</h3>
+            <p>{photoToDelete?.title}</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "10px",
+                marginTop: "20px",
+              }}
+            >
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "6px",
+                  border: "1px solid #555",
+                  backgroundColor: "transparent",
+                  cursor: "pointer",
+                }}
+              >
+                Anuluj
+              </button>
+              <button
+                onClick={deletePhoto}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: "#e11d48",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                Usuń
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Podgląd wybranego zdjęcia */}
+      {selectedImage && (
+        <div
+          onClick={() => setSelectedImage(null)}
+          onContextMenu={(e) => e.preventDefault()}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            cursor: "pointer",
+          }}
+        >
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <img
+              src={selectedImage}
+              alt="Wybrane zdjęcie"
+              style={{
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                borderRadius: "8px",
+                display: "block",
+              }}
+              draggable={false}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: "12px",
+                right: "12px",
+                color: "rgba(255, 255, 255, 0.6)",
+                fontSize: "16px",
+                fontWeight: "bold",
+                textShadow: "0 0 5px rgba(0,0,0,0.7)",
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+            >
+              © ??? App
+            </div>
+          </div>
         </div>
       )}
     </div>

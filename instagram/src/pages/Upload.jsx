@@ -5,15 +5,8 @@ import styles from "../styles/upload.module.css";
 import * as exifr from "exifr";
 import UploadMap from "../components/UploadMap";
 
-const ALLOWED_FOLDERS = [
-  "Wakacje", "Rodzina", "Przyjaciele", "Praca", "Szkoła",
-  "Sport", "Sztuka", "Jedzenie", "Podróże", "Inne"
-];
-
-const ALLOWED_TAGS = [
-  "morze", "góry", "miasto", "plaża", "zachód słońca",
-  "rodzina", "zwierzęta", "sport", "kultura", "noc"
-];
+const ALLOWED_FOLDERS = ["Wakacje", "Rodzina", "Przyjaciele", "Praca", "Szkoła", "Sport", "Sztuka", "Jedzenie", "Podróże", "Inne"];
+const ALLOWED_TAGS = ["morze", "góry", "miasto", "plaża", "zachód słońca", "rodzina", "zwierzęta", "sport", "kultura", "noc"];
 
 export default function Upload() {
   const [file, setFile] = useState(null);
@@ -22,8 +15,8 @@ export default function Upload() {
   const [status, setStatus] = useState(null);
   const [manualLat, setManualLat] = useState(null);
   const [manualLng, setManualLng] = useState(null);
-  const [isPrivate, setIsPrivate] = useState(true); // domyślnie prywatne
-  
+  const [isPrivate, setIsPrivate] = useState(true);
+  const [description, setDescription] = useState(""); // nowy opis
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -51,10 +44,9 @@ export default function Upload() {
     const filePath = `${user.id}/${uuid}_${file.name}`;
     const timestamp = new Date().toISOString();
 
-    // odczyt danych lokalizacyjnych
+    // EXIF
     let latitude = null;
     let longitude = null;
-
     try {
       const gpsData = await exifr.gps(file);
       if (gpsData?.latitude && gpsData?.longitude) {
@@ -65,21 +57,18 @@ export default function Upload() {
       console.warn("Brak danych GPS lub błąd EXIF:", exifError);
     }
 
-    // fallback do lokalizacji z mapy
     if (!latitude && !longitude && manualLat && manualLng) {
       latitude = manualLat;
       longitude = manualLng;
     }
 
-    // upload pliku
-    const { error: uploadError } = await supabase.storage
-      .from("photos")
-      .upload(filePath, file);
-
+    // Upload do Storage
+    const { error: uploadError } = await supabase.storage.from("photos").upload(filePath, file);
     if (uploadError) {
       return setStatus({ type: "error", message: "Błąd uploadu: " + uploadError.message });
     }
 
+    // Insert do tabeli photos
     const { data: photoData, error: photoError } = await supabase
       .from("photos")
       .insert([{
@@ -95,8 +84,7 @@ export default function Upload() {
       return setStatus({ type: "error", message: "Błąd zapisu zdjęcia." });
     }
 
-    console.log("Photo ID for visibility insert:", photoData.id);
-
+    // Widoczność
     const { error: visibilityError } = await supabase
       .from("photo_visibility")
       .insert([{
@@ -105,14 +93,10 @@ export default function Upload() {
       }]);
 
     if (visibilityError) {
-      console.error("Visibility insert error:", visibilityError);
-      return setStatus({
-        type: "error",
-        message: "Błąd zapisu widoczności zdjęcia: " + visibilityError.message,
-      });
+      return setStatus({ type: "error", message: "Błąd widoczności: " + visibilityError.message });
     }
 
-    // zapis metadanych z lokalizacją
+    // Metadane
     const { error: infoError } = await supabase.from("photo_info").insert([{
       photo_id: photoData.id,
       tags: selectedTags.join(","),
@@ -123,15 +107,27 @@ export default function Upload() {
     }]);
 
     if (infoError) {
-      return setStatus({ type: "error", message: "Błąd zapisu metadanych." });
+      return setStatus({ type: "error", message: "Błąd metadanych." });
     }
 
-    setStatus({ type: "success", message: `Sukces! Plik przesłany.` });
+    // Opis – zapis do nowej tabeli photo_descriptions
+    const { error: descError } = await supabase.from("photo_descriptions").insert([{
+      photo_id: photoData.id,
+      description: description,
+    }]);
+
+    if (descError) {
+      return setStatus({ type: "error", message: "Błąd zapisu opisu: " + descError.message });
+    }
+
+    // Reset
+    setStatus({ type: "success", message: "Sukces! Plik przesłany." });
     setFile(null);
     setFolder(ALLOWED_FOLDERS[0]);
     setSelectedTags([]);
     setManualLat(null);
     setManualLng(null);
+    setDescription(""); // reset opisu
   };
 
   return (
@@ -171,7 +167,6 @@ export default function Upload() {
         Publiczne
       </label>
 
-
       <select value={folder} onChange={(e) => setFolder(e.target.value)} className={styles.textInput}>
         {ALLOWED_FOLDERS.map((f) => (
           <option key={f} value={f}>{f}</option>
@@ -191,18 +186,28 @@ export default function Upload() {
         ))}
       </div>
 
+      <label className={styles.inputLabel}>
+        Opis zdjęcia:
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className={styles.textarea}
+          placeholder="Wpisz opis zdjęcia..."
+          rows={4}
+        />
+      </label>
+
       <div style={{ marginTop: "1rem" }}>
         <p>Jeśli zdjęcie nie zawiera lokalizacji, możesz ją wybrać ręcznie:</p>
-          <UploadMap
-            selectedLat={manualLat}
-            selectedLng={manualLng}
-            onSelect={({ lat, lng }) => {
-              setManualLat(lat);
-              setManualLng(lng);
-            }}
-          />
+        <UploadMap
+          selectedLat={manualLat}
+          selectedLng={manualLng}
+          onSelect={({ lat, lng }) => {
+            setManualLat(lat);
+            setManualLng(lng);
+          }}
+        />
       </div>
-
 
       <button onClick={handleUpload} className={styles.button}>Wyślij</button>
 

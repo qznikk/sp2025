@@ -24,6 +24,9 @@ export default function PublicGallery() {
           ),
           photo_visibility (
             is_private
+          ),
+          photo_descriptions (
+            description
           )
         `)
         .order("created_at", { ascending: false });
@@ -52,14 +55,12 @@ export default function PublicGallery() {
     fetchPublicPhotos();
   }, []);
 
-  // 🔒 Blokowanie prawego przycisku myszy
   useEffect(() => {
     const disableContextMenu = (e) => {
       e.preventDefault();
     };
 
     document.addEventListener("contextmenu", disableContextMenu);
-
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
     };
@@ -125,7 +126,6 @@ export default function PublicGallery() {
                     src={photo.url}
                     alt={photo.title}
                     style={{ width: "100%", borderRadius: "6px" }}
-                    // 🚫 Blokada przeciągania zdjęcia
                     draggable="false"
                   />
                   {mediaOverlay}
@@ -163,12 +163,18 @@ export default function PublicGallery() {
 
               <div style={{ marginTop: "10px" }}>
                 <h3>{photo.title || photo.file_path.split("/").pop()}</h3>
+
                 {photo.photo_info?.latitude && photo.photo_info?.longitude && (
                   <p>
                     <strong>📍 Lokalizacja:</strong>{" "}
                     {photo.photo_info.latitude.toFixed(4)}, {photo.photo_info.longitude.toFixed(4)}
                   </p>
                 )}
+
+                <p>
+                  <strong>📝 Opis:</strong>{" "}
+                  {photo.photo_descriptions?.[0]?.description || <em>brak</em>}
+                </p>
               </div>
             </div>
           ))}
