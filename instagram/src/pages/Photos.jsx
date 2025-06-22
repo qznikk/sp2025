@@ -5,6 +5,7 @@ export default function Photos() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState(""); // Stan na wyszukiwanie
   const [selectedImage, setSelectedImage] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState(null);
@@ -98,7 +99,9 @@ export default function Photos() {
 
   const filteredPhotos = photos.filter((photo) => {
     const type = getMediaType(photo.title);
-    return filter === "all" || filter === type;
+    const matchesFilter = filter === "all" || filter === type;
+    const matchesSearch = photo.title.toLowerCase().includes(searchQuery.toLowerCase()); // Sprawdzanie wyszukiwania
+    return matchesFilter && matchesSearch;
   });
 
   const filters = [
@@ -112,6 +115,23 @@ export default function Photos() {
   return (
     <div style={{ padding: "20px" }}>
       <h1 style={{ fontSize: "24px", marginBottom: "16px" }}>Twoje pliki</h1>
+
+      {/* Pole wyszukiwania */}
+      <div style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          placeholder="Wyszukaj zdjęcia..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            padding: "8px 16px",
+            borderRadius: "8px",
+            border: "1px solid #555",
+            width: "100%",
+            maxWidth: "300px",
+          }}
+        />
+      </div>
 
       <div style={{ marginBottom: "20px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
         {filters.map(({ label, value }) => (
@@ -298,8 +318,6 @@ export default function Photos() {
           })}
         </div>
       )}
-
-      {/* Modal powiększenia zdjęcia oraz modal usuwania pozostają bez zmian */}
     </div>
   );
 }
