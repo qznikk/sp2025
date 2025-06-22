@@ -205,10 +205,11 @@ export default function Photos() {
 
             return (
               <div key={photo.id} style={{ textAlign: "center" }}>
+                {/* MEDIA */}
                 {type === "image" && (
                   <div
                     onClick={() => setSelectedImage(url)}
-                    onContextMenu={(e) => e.preventDefault()} // blokada prawego kliknięcia bez togglePrivacy
+                    onContextMenu={(e) => e.preventDefault()}
                     style={{
                       position: "relative",
                       width: "100%",
@@ -229,7 +230,6 @@ export default function Photos() {
                         pointerEvents: "none",
                       }}
                     />
-                    {/* Watermark */}
                     <div
                       style={{
                         position: "absolute",
@@ -273,10 +273,7 @@ export default function Photos() {
                 )}
 
                 {type === "audio" && (
-                  <div
-                    onContextMenu={(e) => e.preventDefault()}
-                    style={{ userSelect: "none" }}
-                  >
+                  <div onContextMenu={(e) => e.preventDefault()} style={{ userSelect: "none" }}>
                     <audio
                       controls
                       style={{ width: "100%" }}
@@ -290,10 +287,7 @@ export default function Photos() {
                 )}
 
                 {type === "file" && (
-                  <div
-                    onContextMenu={(e) => e.preventDefault()}
-                    style={{ userSelect: "none" }}
-                  >
+                  <div onContextMenu={(e) => e.preventDefault()} style={{ userSelect: "none" }}>
                     <a
                       href={url}
                       target="_blank"
@@ -368,7 +362,8 @@ export default function Photos() {
         >
           <div
             style={{
-              backgroundColor: "white",
+              backgroundColor: "#000",
+              color: "#fff",
               padding: "20px",
               borderRadius: "8px",
               minWidth: "300px",
@@ -392,6 +387,7 @@ export default function Photos() {
                   borderRadius: "6px",
                   border: "1px solid #555",
                   backgroundColor: "transparent",
+                  color: "#fff",
                   cursor: "pointer",
                 }}
               >
