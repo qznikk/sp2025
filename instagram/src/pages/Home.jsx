@@ -5,8 +5,8 @@ export default function Home() {
   return (
     <div className={styles.homeBackground}>
       <div className={styles.heroContent}>
-        <h1 className={styles.mainHeading}>Welcome to ?? app</h1>
-        <p className={styles.subHeading}>jakis tam opis bla bla instagram</p>
+        <h1 className={styles.mainHeading}>Welcome to MyPhoto app</h1>
+        <p className={styles.subHeading}>The worse instagram</p>
       </div>
     </div>
   );

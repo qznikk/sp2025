@@ -10,7 +10,9 @@ export default function Albums() {
   const imageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
 
   const isImageFile = (filename) => {
-    return imageExtensions.some(ext => filename.toLowerCase().endsWith(ext));
+    return imageExtensions.some((ext) =>
+      filename.toLowerCase().endsWith(ext)
+    );
   };
 
   useEffect(() => {
@@ -36,9 +38,11 @@ export default function Albums() {
 
       const enrichedPhotos = await Promise.all(
         photoList
-          .filter(photo => isImageFile(photo.file_path))
+          .filter((photo) => isImageFile(photo.file_path))
           .map(async (photo) => {
-            const { data } = supabase.storage.from("photos").getPublicUrl(photo.file_path);
+            const { data } = supabase.storage
+              .from("photos")
+              .getPublicUrl(photo.file_path);
             const url = data?.publicUrl;
 
             let date;
@@ -46,7 +50,11 @@ export default function Albums() {
               const exif = await exifr.parse(url);
               date = exif?.DateTimeOriginal || null;
             } catch (err) {
-              console.warn("Nie udało się pobrać EXIF dla", photo.title, err);
+              console.warn(
+                "Nie udało się pobrać EXIF dla",
+                photo.title,
+                err
+              );
             }
 
             const finalDate = date ? new Date(date) : new Date(photo.created_at);
@@ -60,7 +68,11 @@ export default function Albums() {
               .single();
 
             if (visError) {
-              console.warn("Nie udało się pobrać visibility dla", photo.title, visError);
+              console.warn(
+                "Nie udało się pobrać visibility dla",
+                photo.title,
+                visError
+              );
             }
 
             return {
@@ -87,6 +99,19 @@ export default function Albums() {
     fetchAndGroupPhotos();
   }, []);
 
+  // 🔒 Blokowanie prawego przycisku myszy
+  useEffect(() => {
+    const disableContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener("contextmenu", disableContextMenu);
+
+    return () => {
+      document.removeEventListener("contextmenu", disableContextMenu);
+    };
+  }, []);
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>Albumy wg daty</h1>
@@ -96,7 +121,13 @@ export default function Albums() {
         Object.entries(albums).map(([date, photos]) => (
           <div key={date} style={{ marginBottom: "30px" }}>
             <h2>{date}</h2>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "10px",
+              }}
+            >
               {photos.map((photo) => (
                 <div key={photo.id} style={{ textAlign: "center" }}>
                   <div style={{ position: "relative", width: "150px" }}>
@@ -104,6 +135,7 @@ export default function Albums() {
                       src={photo.url}
                       alt={photo.title}
                       onClick={() => setSelectedImage(photo.url)}
+                      draggable="false" // 🚫 Blokada przeciągania
                       style={{
                         width: "100%",
                         height: "150px",
@@ -136,7 +168,7 @@ export default function Albums() {
         ))
       )}
 
-      {/* MODAL */}
+      {/* MODAL z watermarkiem */}
       {selectedImage && (
         <div
           onClick={() => setSelectedImage(null)}
@@ -153,17 +185,43 @@ export default function Albums() {
             zIndex: 1000,
           }}
         >
-          <img
-            src={selectedImage}
-            alt="Powiększone zdjęcie"
+          <div
             style={{
-              maxWidth: "90%",
-              maxHeight: "90%",
-              borderRadius: "10px",
-              boxShadow: "0 0 20px black",
+              position: "relative",
+              maxWidth: "90%", // Ograniczamy maksymalną szerokość do 90% szerokości ekranu
+              maxHeight: "90%", // Ograniczamy maksymalną wysokość do 90% wysokości ekranu
+              overflow: "hidden", // Ukrywamy część zdjęcia, jeśli wykracza poza dostępny obszar
             }}
             onClick={(e) => e.stopPropagation()}
-          />
+          >
+            <img
+              src={selectedImage}
+              alt="Powiększone zdjęcie"
+              draggable="false"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "10px",
+                boxShadow: "0 0 20px black",
+              }}
+            />
+            {/* WATERMARK */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "20px",
+                right: "30px",
+                color: "rgba(255, 255, 255, 0.8)",
+                fontSize: "24px",
+                fontWeight: "bold",
+                textShadow: "0 0 5px black",
+                pointerEvents: "none",
+              }}
+            >
+              © ???App
+            </div>
+          </div>
+
           <button
             onClick={() => setSelectedImage(null)}
             style={{

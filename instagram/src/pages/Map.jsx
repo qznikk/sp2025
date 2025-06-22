@@ -27,7 +27,6 @@ export default function MapWithMetadata() {
         return;
       }
 
-      // 1. Pobieramy tylko te photo_info, które mają współrzędne i należą do użytkownika
       const { data: photoInfoList, error: infoError } = await supabase
         .from("photo_info")
         .select("id, photo_id, latitude, longitude")
@@ -40,7 +39,6 @@ export default function MapWithMetadata() {
         return;
       }
 
-      // 2. Pobieramy zdjęcia z tabeli photos, które są powiązane z photo_info
       const photoIds = photoInfoList.map((info) => info.photo_id);
 
       const { data: photoList, error: photoError } = await supabase
@@ -55,7 +53,6 @@ export default function MapWithMetadata() {
         return;
       }
 
-      // 3. Łączymy dane z obu tabel
       const mergedPhotos = photoInfoList.map((info) => {
         const matchingPhoto = photoList.find((photo) => photo.id === info.photo_id);
         if (!matchingPhoto) return null;

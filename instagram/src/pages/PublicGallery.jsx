@@ -52,6 +52,19 @@ export default function PublicGallery() {
     fetchPublicPhotos();
   }, []);
 
+  // 🔒 Blokowanie prawego przycisku myszy
+  useEffect(() => {
+    const disableContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener("contextmenu", disableContextMenu);
+
+    return () => {
+      document.removeEventListener("contextmenu", disableContextMenu);
+    };
+  }, []);
+
   const isImage = (ext) => ["jpg", "jpeg", "png", "gif", "webp"].includes(ext);
   const isVideo = (ext) => ["mp4", "mov", "avi", "webm"].includes(ext);
   const isPDF = (ext) => ext === "pdf";
@@ -112,6 +125,8 @@ export default function PublicGallery() {
                     src={photo.url}
                     alt={photo.title}
                     style={{ width: "100%", borderRadius: "6px" }}
+                    // 🚫 Blokada przeciągania zdjęcia
+                    draggable="false"
                   />
                   {mediaOverlay}
                 </div>

@@ -217,7 +217,7 @@ export default function Folders() {
       )}
 
       {/* MODAL tylko dla zdjęć */}
-      {selectedPhoto && (
+            {selectedPhoto && (
         <div
           onClick={() => setSelectedPhoto(null)}
           style={{
@@ -232,18 +232,37 @@ export default function Folders() {
             justifyContent: "center",
             zIndex: 1000,
             cursor: "zoom-out",
+            overflow: "auto",
           }}
         >
-          <img
-            src={selectedPhoto.url}
-            alt="Powiększone"
-            style={{
-              maxWidth: "90%",
-              maxHeight: "90%",
-              borderRadius: "10px",
-              boxShadow: "0 0 20px rgba(255,255,255,0.2)",
-            }}
-          />
+          <div style={{ position: "relative" }}>
+                    <img
+              src={selectedPhoto.url}
+              alt="Powiększone"
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "90vh",
+                objectFit: "contain",
+                borderRadius: "10px",
+                boxShadow: "0 0 20px rgba(255,255,255,0.2)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: "10px",
+                right: "10px",
+                backgroundColor: "rgba(0,0,0,0.5)",
+                color: "white",
+                padding: "6px 10px",
+                borderRadius: "5px",
+                fontSize: "14px",
+                pointerEvents: "none",
+              }}
+            >
+              © ???App
+            </div>
+          </div>
         </div>
       )}
     </div>
