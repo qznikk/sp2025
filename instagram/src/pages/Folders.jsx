@@ -49,7 +49,7 @@ export default function Folders() {
         const isPrivate = photo_id.photo_visibility?.is_private;
         const isMyPhoto = photo_id.user_id === user.id;
 
-        if (isPrivate && !isMyPhoto) continue;
+        if (!isMyPhoto) continue; // tylko zdjęcia zalogowanego użytkownika
 
         const folder = isPrivate ? "Prywatne" : "Publiczne";
 
@@ -217,7 +217,7 @@ export default function Folders() {
       )}
 
       {/* MODAL tylko dla zdjęć */}
-            {selectedPhoto && (
+      {selectedPhoto && (
         <div
           onClick={() => setSelectedPhoto(null)}
           style={{
@@ -236,7 +236,7 @@ export default function Folders() {
           }}
         >
           <div style={{ position: "relative" }}>
-                    <img
+            <img
               src={selectedPhoto.url}
               alt="Powiększone"
               style={{

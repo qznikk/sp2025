@@ -230,6 +230,21 @@ export default function Photos() {
                         pointerEvents: "none",
                       }}
                     />
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "8px",
+                        right: "8px",
+                        color: "rgba(255, 255, 255, 0.6)",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        textShadow: "0 0 3px rgba(0,0,0,0.7)",
+                        userSelect: "none",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      © ??? App
+                    </div>
                     {mediaOverlay}
                   </div>
                 )}
@@ -273,28 +288,19 @@ export default function Photos() {
 
                 {type === "file" && (
                   <div onContextMenu={(e) => e.preventDefault()} style={{ userSelect: "none" }}>
-                    <p
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{
                         display: "block",
                         color: "#4f46e5",
                         marginBottom: "8px",
+                        pointerEvents: "none",
                       }}
+                      draggable={false}
                     >
                       {photo.title}
-                    </p>
-                    <a
-                      href={url}
-                      download={photo.title}
-                      style={{
-                        backgroundColor: "#4f46e5",
-                        color: "#fff",
-                        padding: "6px 12px",
-                        borderRadius: "6px",
-                        textDecoration: "none",
-                        display: "inline-block",
-                      }}
-                    >
-                      Pobierz
                     </a>
                     {mediaOverlay}
                   </div>
@@ -436,6 +442,21 @@ export default function Photos() {
               }}
               draggable={false}
             />
+                        <div
+              style={{
+                position: "absolute",
+                bottom: "8px",
+                right: "8px",
+                color: "rgba(255, 255, 255, 1)",
+                fontSize: "18px",
+                fontWeight: "bold",
+                textShadow: "0 0 3px rgba(0,0,0,0.7)",
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+            >
+              © ??? App
+            </div>
           </div>
         </div>
       )}
