@@ -129,7 +129,6 @@ export default function Photos() {
     <div style={{ padding: "20px" }}>
       <h1 style={{ fontSize: "24px", marginBottom: "16px" }}>Twoje pliki</h1>
 
-      {/* Pole wyszukiwania */}
       <div style={{ marginBottom: "20px" }}>
         <input
           type="text"
@@ -146,7 +145,6 @@ export default function Photos() {
         />
       </div>
 
-      {/* Filtry */}
       <div style={{ marginBottom: "20px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
         {filters.map(({ label, value }) => (
           <button
@@ -167,7 +165,6 @@ export default function Photos() {
         ))}
       </div>
 
-      {/* Lista zdjęć */}
       {loading ? (
         <p>Ładowanie...</p>
       ) : filteredPhotos.length === 0 ? (
@@ -205,7 +202,6 @@ export default function Photos() {
 
             return (
               <div key={photo.id} style={{ textAlign: "center" }}>
-                {/* MEDIA */}
                 {type === "image" && (
                   <div
                     onClick={() => setSelectedImage(url)}
@@ -288,19 +284,21 @@ export default function Photos() {
 
                 {type === "file" && (
                   <div onContextMenu={(e) => e.preventDefault()} style={{ userSelect: "none" }}>
+                    <p style={{ color: "#4f46e5", marginBottom: "8px" }}>{photo.title}</p>
                     <a
                       href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      download
                       style={{
-                        display: "block",
-                        color: "#4f46e5",
-                        marginBottom: "8px",
-                        pointerEvents: "none",
+                        display: "inline-block",
+                        padding: "6px 12px",
+                        backgroundColor: "#4f46e5",
+                        color: "white",
+                        borderRadius: "6px",
+                        textDecoration: "none",
+                        marginTop: "4px",
                       }}
-                      draggable={false}
                     >
-                      {photo.title}
+                      Pobierz plik
                     </a>
                     {mediaOverlay}
                   </div>
@@ -343,7 +341,6 @@ export default function Photos() {
         </div>
       )}
 
-      {/* Modal usuwania */}
       {showDeleteModal && (
         <div
           style={{
@@ -411,7 +408,6 @@ export default function Photos() {
         </div>
       )}
 
-      {/* Podgląd wybranego zdjęcia */}
       {selectedImage && (
         <div
           onClick={() => setSelectedImage(null)}
@@ -442,7 +438,7 @@ export default function Photos() {
               }}
               draggable={false}
             />
-                        <div
+            <div
               style={{
                 position: "absolute",
                 bottom: "8px",
