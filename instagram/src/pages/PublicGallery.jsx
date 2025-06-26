@@ -4,6 +4,18 @@ import supabase from "../lib/supabase-client";
 export default function PublicGallery() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [searchTerm]);
 
   useEffect(() => {
     const fetchPublicPhotos = async () => {
@@ -37,10 +49,21 @@ export default function PublicGallery() {
         return;
       }
 
-      const publicPhotos = data.filter((photo) => photo.photo_visibility?.is_private === false);
+      let publicPhotos = data.filter((photo) => photo.photo_visibility?.is_private === false);
+
+      if (debouncedSearchTerm.trim() !== "") {
+        const lowerTerm = debouncedSearchTerm.toLowerCase();
+        publicPhotos = publicPhotos.filter((photo) => {
+          const title = photo.title?.toLowerCase() || "";
+          const desc = photo.photo_descriptions?.[0]?.description?.toLowerCase() || "";
+          return title.includes(lowerTerm) || desc.includes(lowerTerm);
+        });
+      }
 
       const photosWithUrls = publicPhotos.map((photo) => {
-        const { data: storageData } = supabase.storage.from("photos").getPublicUrl(photo.file_path);
+        const { data: storageData } = supabase.storage
+          .from("photos")
+          .getPublicUrl(photo.file_path);
         return {
           ...photo,
           url: storageData.publicUrl,
@@ -53,7 +76,7 @@ export default function PublicGallery() {
     };
 
     fetchPublicPhotos();
-  }, []);
+  }, [debouncedSearchTerm]);
 
   useEffect(() => {
     const disableContextMenu = (e) => {
@@ -100,6 +123,22 @@ export default function PublicGallery() {
     <div style={{ padding: "20px" }}>
       <h1>Galeria Publiczna</h1>
 
+      <div style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          placeholder="Wyszukaj po nazwie lub opisie..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            fontSize: "16px",
+            borderRadius: "5px",
+            border: "1px solid #ddd",
+          }}
+        />
+      </div>
+
       {loading ? (
         <p>Ładowanie zdjęć...</p>
       ) : (
@@ -110,74 +149,79 @@ export default function PublicGallery() {
             gap: "20px",
           }}
         >
-          {photos.map((photo) => (
-            <div
-              key={photo.id}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                padding: "12px",
-                position: "relative",
-              }}
-            >
-              {isImage(photo.extension) ? (
-                <div style={{ position: "relative" }}>
-                  <img
-                    src={photo.url}
-                    alt={photo.title}
-                    style={{ width: "100%", borderRadius: "6px" }}
-                    draggable="false"
-                  />
-                  {mediaOverlay}
-                </div>
-              ) : isVideo(photo.extension) ? (
-                <div style={{ position: "relative" }}>
-                  <video
-                    src={photo.url}
-                    controls
-                    playsInline
-                    controlsList="nodownload"
+          {photos.length === 0 && debouncedSearchTerm ? (
+            <p>Brak zdjęć spełniających kryteria wyszukiwania.</p>
+          ) : (
+            photos.map((photo) => (
+              <div
+                key={photo.id}
+                style={{
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  position: "relative",
+                }}
+              >
+                {isImage(photo.extension) ? (
+                  <div style={{ position: "relative" }}>
+                    <img
+                      src={photo.url}
+                      alt={photo.title}
+                      style={{ width: "100%", borderRadius: "6px" }}
+                      draggable="false"
+                    />
+                    {mediaOverlay}
+                  </div>
+                ) : isVideo(photo.extension) ? (
+                  <div style={{ position: "relative" }}>
+                    <video
+                      src={photo.url}
+                      controls
+                      playsInline
+                      controlsList="nodownload"
+                      style={{
+                        width: "100%",
+                        borderRadius: "6px",
+                        background: "#000",
+                      }}
+                    >
+                      Twoja przeglądarka nie obsługuje odtwarzania wideo.
+                    </video>
+                    {mediaOverlay}
+                  </div>
+                ) : (
+                  <div
                     style={{
-                      width: "100%",
-                      borderRadius: "6px",
-                      background: "#000",
+                      height: "180px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "64px",
                     }}
                   >
-                    Twoja przeglądarka nie obsługuje odtwarzania wideo.
-                  </video>
-                  {mediaOverlay}
-                </div>
-              ) : (
-                <div
-                  style={{
-                    height: "180px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "64px",
-                  }}
-                >
-                  {fileIcon(photo.extension)}
-                </div>
-              )}
-
-              <div style={{ marginTop: "10px" }}>
-                <h3>{photo.title || photo.file_path.split("/").pop()}</h3>
-
-                {photo.photo_info?.latitude && photo.photo_info?.longitude && (
-                  <p>
-                    <strong>📍 Lokalizacja:</strong>{" "}
-                    {photo.photo_info.latitude.toFixed(4)}, {photo.photo_info.longitude.toFixed(4)}
-                  </p>
+                    {fileIcon(photo.extension)}
+                  </div>
                 )}
 
-                <p>
-                  <strong>📝 Opis:</strong>{" "}
-                  {photo.photo_descriptions?.[0]?.description || <em>brak</em>}
-                </p>
+                <div style={{ marginTop: "10px" }}>
+                  <h3>{photo.title || photo.file_path.split("/").pop()}</h3>
+
+                  {photo.photo_info?.latitude && photo.photo_info?.longitude && (
+                    <p>
+                      <strong>📍 Lokalizacja:</strong>{" "}
+                      {photo.photo_info.latitude.toFixed(4)},{" "}
+                      {photo.photo_info.longitude.toFixed(4)}
+                    </p>
+                  )}
+
+                  <p>
+                    <strong>📝 Opis:</strong>{" "}
+                    {photo.photo_descriptions?.[0]?.description || <em>brak</em>}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
     </div>

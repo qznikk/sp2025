@@ -1,0 +1,305 @@
+/* Upload.module.css - Ciemny Motyw */
+
+/* General Layout */
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #1f1f3a; /* Trochę jaśniejszy od tła głównego dla kontrastu */
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); /* Wyraźniejszy cień */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e0e0e0; /* Jasny tekst */
+  border: 1px solid #3d007c; /* Delikatna fioletowa ramka */
+}
+
+.title {
+  text-align: center;
+  color: #e0e0e0; /* Jasny tekst */
+  margin-bottom: 30px;
+  font-size: 2.2em;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.section {
+  background-color: #1a1a2e; /* Ciemne tło dla sekcji */
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 25px;
+  border: 1px solid #3d007c; /* Fioletowa ramka */
+}
+
+.section h2 {
+  color: #e0e0e0; /* Jasny tekst */
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.6em;
+  border-bottom: 2px solid #3d007c; /* Fioletowa linia */
+  padding-bottom: 10px;
+}
+
+.infoText {
+  font-size: 0.95em;
+  color: #b0b0b0; /* Jaśniejszy szary dla tekstu informacyjnego */
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* Dropzone */
+.dropzone {
+  border: 3px dashed #8a2be2; /* Fioletowa przerywana linia */
+  background-color: #1a1a2e; /* Ciemne tło dropzone */
+  border-radius: 10px;
+  padding: 50px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dropzone:hover {
+  border-color: #9370db; /* Jaśniejszy fiolet na hover */
+  background-color: #2a2a47; /* Jaśniejsze tło na hover */
+}
+
+.fileInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.fileName {
+  font-size: 1.2em;
+  color: #2ecc71; /* Zielony dla nazwy pliku (sukces) */
+  font-weight: 600;
+}
+
+.filePlaceholder {
+  font-size: 1.1em;
+  color: #b0b0b0; /* Jasny szary dla placeholderu */
+}
+
+/* Form Elements */
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #e0e0e0; /* Jasny tekst */
+  font-size: 1em;
+}
+
+.selectInput,
+.textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #3d007c; /* Fioletowa ramka */
+  background-color: #2a2a47; /* Ciemniejsze tło inputów */
+  color: #e0e0e0; /* Jasny tekst w inputach */
+  border-radius: 8px;
+  font-size: 1em;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Styl dla placeholderów w inputach/textarea */
+.selectInput::placeholder,
+.textarea::placeholder {
+  color: #a0a0a0; /* Jasny szary dla placeholderów */
+  opacity: 1; /* Ensure placeholder is visible */
+}
+
+.selectInput:focus,
+.textarea:focus {
+  border-color: #8a2be2; /* Fiolet na focus */
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.25); /* Fioletowy cień na focus */
+  outline: none;
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Checkbox Group (for visibility) */
+.checkboxGroup {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  color: #e0e0e0; /* Jasny tekst */
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.2);
+  cursor: pointer;
+  /* Dalsza stylizacja checkboxa może wymagać ukrycia domyślnego i stylizowania własnego elementu */
+  accent-color: #8a2be2; /* Fioletowy kolor zaznaczenia dla nowoczesnych przeglądarek */
+}
+
+
+/* Tags */
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tagLabel {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  border: 1px solid #3d007c; /* Fioletowa ramka */
+  border-radius: 20px;
+  background-color: #2a2a47; /* Ciemniejsze tło tagów */
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  font-size: 0.9em;
+  color: #b0b0b0; /* Jasny szary tekst */
+}
+
+.tagLabel:hover {
+  background-color: #3f3f5a; /* Jaśniejsze tło na hover */
+  border-color: #8a2be2; /* Fioletowa ramka na hover */
+}
+
+.tagSelected {
+  background-color: #8a2be2; /* Fioletowy dla zaznaczonych tagów */
+  color: white;
+  border-color: #8a2be2;
+}
+
+.tagSelected:hover {
+  background-color: #6a0dad; /* Ciemniejszy fiolet na hover */
+  border-color: #6a0dad;
+}
+
+.tagCheckbox {
+  margin-right: 8px;
+  display: none; /* Hide default checkbox */
+}
+
+/* Map */
+.mapContainer {
+  margin-top: 15px;
+  border: 1px solid #3d007c; /* Fioletowa ramka */
+  border-radius: 10px;
+  overflow: hidden;
+  height: 400px;
+  position: relative;
+  background-color: #2a2a47; /* Tło mapy (jeśli nie jest ładowana zewnętrznie) */
+}
+
+.selectedLocation {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #b0b0b0; /* Jasny szary tekst */
+  font-weight: 500;
+}
+
+/* Button */
+.button {
+  display: block;
+  width: 100%;
+  padding: 15px 25px;
+  background-color: #8a2be2; /* Fioletowy przycisk */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 30px;
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4); /* Fioletowy cień */
+}
+
+.button:hover {
+  background-color: #6a0dad; /* Ciemniejszy fiolet */
+  transform: translateY(-2px);
+}
+
+.button:disabled {
+  background-color: #4a4a6b; /* Ciemniejszy szary dla wyłączonego przycisku */
+  color: #909090;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Status Messages */
+.status {
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+.status.success {
+  background-color: #2ecc71; /* Jasny zielony */
+  color: #1a1a2e; /* Ciemny tekst na zielonym tle */
+  border: 1px solid #27ae60;
+}
+
+.status.error {
+  background-color: #e74c3c; /* Czerwony */
+  color: white;
+  border: 1px solid #c0392b;
+}
+
+.status.info {
+  background-color: #8a2be2; /* Fioletowy */
+  color: white;
+  border: 1px solid #6a0dad;
+}
+
+/* Responsywność - jeśli używasz tych stylów w module CSS, dodaj media queries */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+  .title {
+    font-size: 1.8em;
+  }
+  .section {
+    padding: 20px;
+  }
+  .section h2 {
+    font-size: 1.4em;
+  }
+  .dropzone {
+    padding: 30px 15px;
+  }
+  .selectInput,
+  .textarea,
+  .button {
+    padding: 10px 12px;
+    font-size: 0.95em;
+  }
+  .tagLabel {
+    padding: 6px 12px;
+    font-size: 0.85em;
+  }
+}

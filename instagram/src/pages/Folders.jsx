@@ -23,6 +23,7 @@ export default function Folders() {
       const { data, error } = await supabase
         .from("photo_info")
         .select(`
+          folder,
           tags,
           photo_id (
             id,
@@ -41,25 +42,29 @@ export default function Folders() {
         return;
       }
 
-      const folderMap = new Map();
+      const topLevelFolders = new Map(); // "Prywatne" / "Publiczne"
 
-      for (const { tags, photo_id } of data) {
+      for (const { folder, tags, photo_id } of data) {
         if (!photo_id?.file_path) continue;
 
         const isPrivate = photo_id.photo_visibility?.is_private;
         const isMyPhoto = photo_id.user_id === user.id;
+        if (!isMyPhoto) continue;
 
-        if (!isMyPhoto) continue; // tylko zdjęcia zalogowanego użytkownika
+        const topFolderName = isPrivate ? "Prywatne" : "Publiczne";
+        const subfolder = folder?.trim() || "Bez folderu";
 
-        const folder = isPrivate ? "Prywatne" : "Publiczne";
+        if (!topLevelFolders.has(topFolderName)) {
+          topLevelFolders.set(topFolderName, new Map());
+        }
 
-        if (!folderMap.has(folder)) folderMap.set(folder, []);
+        const subMap = topLevelFolders.get(topFolderName);
+        if (!subMap.has(subfolder)) subMap.set(subfolder, []);
 
         const { data: publicData } = supabase.storage.from("photos").getPublicUrl(photo_id.file_path);
-
         const extension = photo_id.file_path.split('.').pop().toLowerCase();
 
-        folderMap.get(folder).push({
+        subMap.get(subfolder).push({
           id: photo_id.id,
           file_path: photo_id.file_path,
           url: publicData?.publicUrl || null,
@@ -69,9 +74,12 @@ export default function Folders() {
         });
       }
 
-      const formatted = Array.from(folderMap.entries()).map(([name, files]) => ({
-        name,
-        files,
+      const formatted = Array.from(topLevelFolders.entries()).map(([topName, subMap]) => ({
+        name: topName,
+        subfolders: Array.from(subMap.entries()).map(([subName, files]) => ({
+          name: subName,
+          files,
+        })),
       }));
 
       setFolders(formatted);
@@ -92,37 +100,34 @@ export default function Folders() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div
+  style={{ padding: "20px" }}
+  onContextMenu={(e) => e.preventDefault()}
+>
       <h1>Foldery</h1>
 
       {loading ? (
         <p>Ładowanie...</p>
       ) : folders.length > 0 ? (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-          {folders.map((folder) => (
-            <div
-              key={folder.name}
-              style={{
-                border: "1px solid #ccc",
-                padding: "15px",
-                borderRadius: "8px",
-                width: "100%",
-                maxWidth: "400px",
-              }}
-            >
-              <h2>{folder.name}</h2>
-              {folder.files.length > 0 ? (
-                <div>
-                  <strong>Pliki:</strong>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
-                      marginTop: "10px",
-                    }}
-                  >
-                    {folder.files.map((file) => (
+        folders.map((folder) => (
+          <div key={folder.name} style={{ marginBottom: "30px" }}>
+            <h2>{folder.name}</h2>
+
+            {folder.subfolders.map((sub) => (
+              <div
+                key={sub.name}
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "15px",
+                  borderRadius: "8px",
+                  marginBottom: "20px",
+                }}
+              >
+                <h3 style={{ marginBottom: "10px" }}>{sub.name}</h3>
+
+                {sub.files.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    {sub.files.map((file) => (
                       <div
                         key={file.id}
                         style={{
@@ -178,13 +183,7 @@ export default function Folders() {
                             {file.file_path.split("/").pop()}
                           </a>
                           {file.tags.length > 0 && (
-                            <ul
-                              style={{
-                                margin: 0,
-                                paddingLeft: "16px",
-                                fontSize: "13px",
-                              }}
-                            >
+                            <ul style={{ margin: 0, paddingLeft: "16px", fontSize: "13px" }}>
                               {file.tags.map((tag) => (
                                 <li key={tag}>{tag}</li>
                               ))}
@@ -194,13 +193,13 @@ export default function Folders() {
                       </div>
                     ))}
                   </div>
-                </div>
-              ) : (
-                <p>Brak plików w folderze.</p>
-              )}
-            </div>
-          ))}
-        </div>
+                ) : (
+                  <p>Brak plików w folderze.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        ))
       ) : (
         <div
           style={{

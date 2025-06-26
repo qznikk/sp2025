@@ -1,0 +1,295 @@
+/* Albums.module.css - Ciemny Motyw */
+
+/* General container for the entire page */
+.container {
+  max-width: 1000px; /* Wider container for photos */
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #1a1a2e; /* Ciemne tło, jak w dashboardzie */
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); /* Wyraźniejszy cień */
+  font-family: 'Inter', sans-serif;
+  color: #e0e0e0; /* Jasny tekst */
+}
+
+/* Page title */
+.title {
+  text-align: center;
+  color: #e0e0e0; /* Jasny tekst */
+  margin-bottom: 40px;
+  font-size: 2.5em;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  border-bottom: 3px solid #3d007c; /* Fioletowa linia */
+  padding-bottom: 15px;
+}
+
+/* Loading and No Photos Messages */
+.loadingMessage,
+.noPhotosMessage {
+  text-align: center;
+  font-size: 1.2em;
+  color: #b0b0b0; /* Jasny szary tekst */
+  padding: 50px 20px;
+  background-color: #1f1f3a; /* Trochę jaśniejsze tło */
+  border-radius: 10px;
+  margin-top: 30px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Ciemniejszy cień wewnętrzny */
+  border: 1px solid #3d007c;
+}
+
+/* Section for each album (date group) */
+.albumSection {
+  margin-bottom: 40px;
+  padding: 25px;
+  background-color: #1f1f3a; /* Trochę jaśniejsze tło, jak karty w dashboardzie */
+  border-radius: 10px;
+  border: 1px solid #3d007c; /* Fioletowa ramka */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); /* Ciemniejszy cień */
+}
+
+/* Album date heading */
+.albumDate {
+  color: #e0e0e0; /* Jasny tekst */
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  font-weight: 600;
+  border-bottom: 2px solid #3d007c; /* Fioletowa linia */
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.albumDate::before {
+  content: "📅"; /* Calendar icon - możesz zmienić na ikonę z react-icons dla spójności */
+  margin-right: 10px;
+  font-size: 0.9em;
+}
+
+/* Grid for photos within an album */
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Individual photo card */
+.photoCard {
+  background-color: #2a2a47; /* Tło karty zdjęcia */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Bardziej wyraźny cień */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid #3d007c; /* Fioletowa ramka */
+}
+
+.photoCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6); /* Jeszcze wyraźniejszy cień na hover */
+}
+
+.imageWrapper {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.photoCard:hover .thumbnail {
+  transform: scale(1.05);
+}
+
+.visibilityTag {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: rgba(138, 43, 226, 0.8); /* Fioletowy z przezroczystością */
+  color: white;
+  font-size: 0.75em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 1; /* Pełna widoczność */
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.photoTitle {
+  font-size: 0.95em;
+  color: #e0e0e0; /* Jasny tekst tytułu zdjęcia */
+  margin: 12px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+/* Modal for enlarged image */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95); /* Bardzo ciemny overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px); /* Mocniejsze rozmycie */
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  background-color: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(138, 43, 226, 0.6); /* Fioletowy blask */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #8a2be2; /* Fioletowa ramka wokół modala */
+}
+
+.modalImage {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  border-radius: 8px;
+}
+
+.watermark {
+  position: absolute;
+  bottom: 25px;
+  right: 35px;
+  color: rgba(255, 255, 255, 0.6); /* Biały z przezroczystością */
+  font-size: 28px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.9); /* Mocniejszy cień dla czytelności */
+  pointer-events: none;
+  font-family: 'Inter', sans-serif;
+  z-index: 1002; /* Upewnij się, że jest nad obrazem */
+}
+
+.closeButton {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  font-size: 40px;
+  color: #e0e0e0; /* Jasny tekst */
+  background: #3d007c; /* Fioletowe tło dla przycisku */
+  border: 2px solid #8a2be2; /* Fioletowa ramka */
+  border-radius: 50%; /* Okrągły przycisk */
+  width: 50px; /* Stała szerokość */
+  height: 50px; /* Stała wysokość */
+  display: flex; /* Do centrowania X */
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  font-family: 'Arial', sans-serif;
+}
+
+.closeButton:hover {
+  transform: rotate(90deg) scale(1.1);
+  color: white;
+  background-color: #e74c3c; /* Czerwony na hover */
+  border-color: #c0392b;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  .title {
+    font-size: 2em;
+    margin-bottom: 30px;
+  }
+
+  .albumDate {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .imageWrapper {
+    height: 150px;
+  }
+
+  .watermark {
+    font-size: 20px;
+    bottom: 15px;
+    right: 20px;
+  }
+
+  .closeButton {
+    font-size: 32px;
+    top: 15px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 15px;
+    margin: 15px auto;
+  }
+
+  .title {
+    font-size: 1.8em;
+  }
+
+  .albumDate {
+    font-size: 1.3em;
+  }
+
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .imageWrapper {
+    height: 120px;
+  }
+
+  .watermark {
+    font-size: 16px;
+    bottom: 10px;
+    right: 15px;
+  }
+
+  .closeButton {
+    font-size: 28px;
+    top: 10px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+  }
+}

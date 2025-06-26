@@ -1,36 +1,335 @@
-.container {
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
-  background-color: #1f2937;
+/* Dashboard.module.css - Ciemny Motyw */
+
+.dashboardContainer {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1a1a2e; /* Ciemne tło */
+  min-height: 100vh;
+  padding: 30px;
+  color: #e0e0e0; /* Jasny tekst na ciemnym tle */
+}
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1f1f3a; /* Trochę jaśniejszy od tła dla kontrastu */
+  padding: 25px 35px;
   border-radius: 12px;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); /* Wyraźniejszy cień */
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  border: 1px solid #3d007c; /* Delikatna fioletowa ramka */
 }
 
-.title {
-  font-size: 28px;
-  color: #ffffff;
-  margin-bottom: 20px;
-  text-align: center;
+.userProfileSummary {
+  display: flex;
+  align-items: center;
 }
 
-.infoBox {
-  background-color: #2d3748;
-  padding: 20px;
+.avatar {
+  font-size: 4.5em;
+  color: #8a2be2; /* Głęboki fiolet */
+  margin-right: 20px;
+}
+
+.welcomeTitle {
+  font-size: 2.2em;
+  margin: 0;
+  color: #e0e0e0;
+  font-weight: 700;
+}
+
+.userGreeting {
+  font-size: 1.1em;
+  color: #a0a0a0; /* Jaśniejszy szary dla mniejszego kontrastu */
+  margin-top: 5px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  background-color: #8a2be2; /* Fioletowy przycisk */
+  color: white;
+  border: none;
+  padding: 12px 20px;
   border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 3px 10px rgba(138, 43, 226, 0.4); /* Fioletowy cień */
+}
+
+.actionButton:hover {
+  background-color: #6a0dad; /* Ciemniejszy fiolet */
+  transform: translateY(-2px);
+}
+
+.logoutButton {
+  background-color: #e74c3c; /* Czerwony dla wylogowania */
+  box-shadow: 0 3px 10px rgba(231, 76, 60, 0.4);
+}
+
+.logoutButton:hover {
+  background-color: #c0392b;
+}
+
+.buttonIcon {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: #1f1f3a; /* Trochę jaśniejszy od tła */
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #3d007c; /* Delikatna fioletowa ramka */
+}
+
+.cardTitle {
+  font-size: 1.6em;
+  color: #e0e0e0;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  border-bottom: 2px solid #3d007c; /* Fioletowa linia */
+  padding-bottom: 10px;
 }
 
-.infoText {
-  color: #ffffff;
-  font-size: 18px;
+.cardIcon {
+  font-size: 1.4em;
+  color: #8a2be2;
+  margin-right: 10px;
 }
 
-.subText {
-  color: #aaa;
-  font-size: 16px;
+.cardText {
+  font-size: 1.1em;
+  color: #b0b0b0; /* Jaśniejszy szary dla tekstu */
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.cardText strong, .cardText span {
+    font-weight: 600;
+}
+
+.infoIcon {
+  margin-right: 8px;
+  color: #8a2be2;
+  font-size: 1.1em;
 }
 
 .value {
-  color: #ffffff;
+  color: #9370db; /* Jaśniejszy fiolet */
+  font-weight: bold;
+}
+
+.cardTextSmall {
+  font-size: 0.9em;
+  color: #808080;
+  margin-top: 15px;
+  text-align: right;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.statItem {
+  background-color: #2a2a47; /* Jeszcze jaśniejsze tło dla statystyk */
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #3d007c;
+}
+
+.statNumber {
+  font-size: 2em;
+  font-weight: 700;
+  color: #2ecc71; /* Akcent zielony dla liczb, dobrze kontrastuje z fioletem */
+  display: block;
+  margin-bottom: 5px;
+}
+
+.statLabel {
+  font-size: 0.9em;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+.actionList {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+}
+
+.actionList li {
+  margin-bottom: 10px;
+}
+
+.actionItemButton {
+  width: 100%;
+  background-color: #4a4a6b; /* Ciemniejszy szary/fiolet */
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  text-align: left;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.actionItemButton:hover {
+  background-color: #5a5a7b;
+  transform: translateY(-2px);
+}
+
+/* Styl dla komunikatu o braku sesji (ciemny motyw) */
+.centeredMessage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px);
+  text-align: center;
+  background-color: #1a1a2e; /* Ciemne tło */
+  color: #e0e0e0; /* Jasny tekst */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  margin: 50px auto;
+  max-width: 600px;
+  border: 1px solid #3d007c;
+}
+
+.messageTitle {
+  font-size: 2.2em;
+  color: #e74c3c; /* Czerwony dla ostrzeżenia */
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.messageText {
+  font-size: 1.2em;
+  color: #b0b0b0;
+  margin-bottom: 25px;
+}
+
+.loginButton {
+  background-color: #2ecc71; /* Zielony przycisk logowania (kontrast) */
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);
+}
+
+.loginButton:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}
+
+
+/* Media Queries dla responsywności - bez zmian, bo dotyczą układu, nie kolorów */
+@media (max-width: 768px) {
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .userProfileSummary {
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+
+  .avatar {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .welcomeTitle {
+    font-size: 1.8em;
+  }
+
+  .userGreeting {
+    font-size: 1em;
+  }
+
+  .headerActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .actionButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardTitle {
+    justify-content: center;
+  }
+
+  .cardIcon {
+    margin-right: 5px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+    .dashboardContainer {
+        padding: 15px;
+    }
+    .dashboardHeader {
+        padding: 20px 20px;
+    }
+    .welcomeTitle {
+        font-size: 1.6em;
+    }
+    .card {
+        padding: 20px;
+    }
+    .cardTitle {
+        font-size: 1.4em;
+    }
+    .cardText, .actionItemButton {
+        font-size: 0.95em;
+    }
+    .statNumber {
+        font-size: 1.8em;
+    }
 }

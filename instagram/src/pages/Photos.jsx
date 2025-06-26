@@ -287,7 +287,9 @@ export default function Photos() {
                     <p style={{ color: "#4f46e5", marginBottom: "8px" }}>{photo.title}</p>
                     <a
                       href={url}
-                      download
+                      download={photo.title} // Add the download attribute with a suggested filename
+                      target="_blank" // Open in a new tab
+                      rel="noopener noreferrer" // Security best practice for target="_blank"
                       style={{
                         display: "inline-block",
                         padding: "6px 12px",
